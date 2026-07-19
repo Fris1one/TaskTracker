@@ -1,8 +1,8 @@
 package ui
 
 import (
-	"fmt"
 	"TaskTracker/internal/task"
+	"fmt"
 	"strconv"
 
 	"fyne.io/fyne/v2"
@@ -34,6 +34,7 @@ func (a *App) createDescription() fyne.CanvasObject {
 			value, err := strconv.Atoi(text)
 			if err == nil {
 				taskCopy.SetPriority(value)
+				a.schedule.SortDay(a.chosenDate.TaskDeadLine)
 			}
 			a.update()
 		}

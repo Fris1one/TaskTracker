@@ -1,10 +1,11 @@
 package ui
 
 import (
+	"TaskTracker/internal/res"
 	"TaskTracker/internal/schedule"
 	"TaskTracker/internal/storage"
 	"TaskTracker/internal/task"
-"TaskTracker/internal/res"
+
 	"fyne.io/fyne/v2"
 )
 

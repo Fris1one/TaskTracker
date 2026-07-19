@@ -1,8 +1,8 @@
 package schedule
 
 import (
-	"fmt"
 	"TaskTracker/internal/task"
+	"fmt"
 	"sort"
 )
 
@@ -31,11 +31,12 @@ func (s *Schedule) AddTask(t *task.Task) {
 
 func (s *Schedule) SortPriority(t *task.Task) {
 	key := t.DeadLine()
-
 	s.dates[key] = append(s.dates[key], t)
-
-	sort.Slice(s.dates[key], func(i, j int) bool {
-		return s.dates[key][i].Priority() > s.dates[key][j].Priority()
+	s.SortDay(key)
+}
+func (s *Schedule) SortDay(td task.TaskDeadLine) {
+	sort.Slice(s.dates[td], func(i, j int) bool {
+		return s.dates[td][i].Priority() > s.dates[td][j].Priority()
 	})
 }
 func (s *Schedule) DeleteTask(t task.TaskDeadLine, i int) error {

@@ -40,7 +40,7 @@ func (s *Schedule) SortDay(td task.TaskDeadLine) {
 	})
 }
 func (s *Schedule) DeleteTask(t task.TaskDeadLine, i int) error {
-	if i <= 0 || i >= len(s.dates[t]) {
+	if i <= 0 || i > len(s.dates[t]) {
 		return fmt.Errorf("incorrect number")
 	}
 	s.dates[t] = append(s.dates[t][:i-1], s.dates[t][i:]...)

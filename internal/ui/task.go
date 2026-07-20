@@ -91,12 +91,10 @@ func (a *App) AddTaskPriority(name string, priority string) error {
 func (a *App) btnAddAction() {
 	popUp := widget.NewPopUp(container.NewVBox(), a.window.Canvas())
 	title := widget.NewLabel("Write action")
-	nameData := binding.NewString()
-	nameData.Set("name")
-	name := widget.NewEntryWithData(nameData)
-	priorityData := binding.NewString()
-	priorityData.Set("priority")
-	priority := widget.NewEntryWithData(priorityData)
+	name := widget.NewEntry()
+	name.SetPlaceHolder("Write name")
+	priority := widget.NewEntry()
+	priority.SetPlaceHolder("Write priority from 1 to 5")
 	inputs := container.NewGridWithColumns(3, name, widget.NewLabel("-"), priority)
 	add := widget.NewButton("Add", func() {
 		err :=
@@ -108,15 +106,14 @@ func (a *App) btnAddAction() {
 	},
 	)
 	popUp.Content = container.NewVBox(title, inputs, add)
-	popUp.Resize(fyne.NewSize(400, 0))
+	popUp.Resize(fyne.NewSize(300, 0))
 	popUp.Show()
 }
 
 func (a *App) btnDeleteAction() {
 	popUp := widget.NewPopUp(container.NewVBox(), a.window.Canvas())
-	data := binding.NewString()
-	data.Set("Write task number")
-	entry := widget.NewEntryWithData(data)
+	entry := widget.NewEntry()
+	entry.SetPlaceHolder("Write task number")
 	deleteBtn := widget.NewButton("Delete", func() {
 		index, err := strconv.Atoi(entry.Text)
 		if err != nil {

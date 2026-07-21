@@ -46,3 +46,17 @@ func (s *Schedule) DeleteTask(t task.TaskDeadLine, i int) error {
 	s.dates[t] = append(s.dates[t][:i-1], s.dates[t][i:]...)
 	return nil
 }
+
+func (s *Schedule) MoveTask(t *task.Task, newDate task.TaskDeadLine) {
+	oldDate := t.DeadLine()
+	tasks := s.dates[oldDate]
+	for i, tt := range tasks {
+		if tt == t {
+			s.dates[oldDate] = append(tasks[:i], tasks[i+1:]...)
+			break
+		}
+	}
+	t.SetDeadLine(newDate.Day(), newDate.Month(), newDate.Year())
+	s.dates[newDate] = append(s.dates[newDate], t)
+	s.SortDay(newDate)
+}

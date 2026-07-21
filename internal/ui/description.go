@@ -2,12 +2,15 @@ package ui
 
 import (
 	"TaskTracker/internal/task"
+
+	"TaskTracker/internal/calendar"
 	"fmt"
 	"strconv"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -40,6 +43,10 @@ func (a *App) createDescription() fyne.CanvasObject {
 		}
 		star := newStarButton(a, t)
 		stage := newStageButton(a, t)
+		changeDate := widget.NewButtonWithIcon("", theme.ViewRefreshIcon(), func() {
+			a.btnChangeDateAction(t)
+			a.update()
+		})
 		row := container.NewBorder(
 			nil,
 			nil,
@@ -49,6 +56,7 @@ func (a *App) createDescription() fyne.CanvasObject {
 				priority,
 				star,
 				stage,
+				changeDate,
 				widget.NewLabel(" "),
 			),
 			name,
@@ -97,8 +105,7 @@ func (a *App) btnAddAction() {
 	priority.SetPlaceHolder("Write priority from 1 to 5")
 	inputs := container.NewGridWithColumns(3, name, widget.NewLabel("-"), priority)
 	add := widget.NewButton("Add", func() {
-		err :=
-			a.AddTaskPriority(name.Text, priority.Text)
+		err := a.AddTaskPriority(name.Text, priority.Text)
 		if err == nil {
 			popUp.Hide()
 			a.update()
@@ -131,6 +138,50 @@ func (a *App) btnDeleteAction() {
 	popUp.Show()
 }
 
+func (a *App) btnChangeDateAction(t *task.Task) {
+	a.changeDay(t)
+	a.update()
+}
+
+func (a *App) changeDay(t *task.Task) {
+	popUp := widget.NewPopUp(container.NewVBox(), a.window.Canvas())
+	month := container.NewCenter(widget.NewLabel(fmt.Sprintf("%s.%d", interpreateMonth(a.chosenDate.Month()), a.chosenDate.Year())))
+	weekdays := []string{"пн", "вт", "ср", "чт", "пт", "сб", "вс"}
+	var days []fyne.CanvasObject
+	for _, day := range weekdays {
+		label := widget.NewLabelWithStyle(day, fyne.TextAlignCenter, fyne.TextStyle{Bold: true})
+		days = append(days, label)
+	}
+	dates := calendar.Fill(a.chosenDate.TaskDeadLine)
+	for i := range dates {
+		for j := range dates[i] {
+			current := dates[i][j]
+			btn := widget.NewButton(fmt.Sprintf("%d", current.Day()), func() {})
+			if current.Month() != a.chosenDate.Month() {
+				btn.Importance = widget.LowImportance
+			}
+			btn.OnTapped = func() {
+				a.schedule.MoveTask(t, current)
+				popUp.Hide()
+				a.update()
+			}
+			if a.hasFavouriteOnDate(current) {
+				btn.Icon = theme.InfoIcon()
+			}
+			days = append(days, btn)
+		}
+	}
+	gridMonths := container.NewGridWithColumns(7, days...)
+	popUp.Content = container.NewBorder(
+		month,
+		nil,
+		nil,
+		nil,
+		gridMonths,
+	)
+	popUp.Resize(fyne.NewSize(200, 200))
+	popUp.Show()
+}
 func (a *App) hasFavouriteOnDate(date task.TaskDeadLine) bool {
 	tasks := a.schedule.Dates()[date]
 	for _, t := range tasks {

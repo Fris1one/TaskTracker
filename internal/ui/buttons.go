@@ -5,18 +5,17 @@ import (
 	"TaskTracker/internal/task"
 
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
 
 var (
-	goldenStar fyne.Resource
-	blackStar  fyne.Resource
-)
-
-var (
-	onOffButton  fyne.Resource
-	floralCircle fyne.Resource
-	checkMark    fyne.Resource
+	goldenStar     fyne.Resource
+	blackStar      fyne.Resource
+	onOffButton    fyne.Resource
+	floralCircle   fyne.Resource
+	checkMark      fyne.Resource
+	changeDateIcon fyne.Resource
 )
 
 func init() {
@@ -25,6 +24,7 @@ func init() {
 	onOffButton = res.ResourceOnOffButtonPng
 	floralCircle = res.ResourceFloralCirclePng
 	checkMark = res.ResourceCheckMarkPng
+	changeDateIcon = theme.ViewRefreshIcon()
 }
 
 type starButton struct {
@@ -90,4 +90,20 @@ func (sb *stageButton) updateIcon() {
 	case 2:
 		sb.SetResource(checkMark)
 	}
+}
+
+type changeDateButton struct {
+	widget.Icon
+	task *task.Task
+	app  *App
+}
+
+func newChangeDateButton(app *App, t *task.Task) *changeDateButton {
+	changeDate := &changeDateButton{
+		task: t,
+		app:  app,
+	}
+	changeDate.SetResource(changeDateIcon)
+	changeDate.ExtendBaseWidget(changeDate)
+	return changeDate
 }
